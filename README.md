@@ -1,8 +1,8 @@
-[![PyPI](https://img.shields.io/pypi/v/pytorch-fid.svg)](https://pypi.org/project/pytorch-fid/)
+[![PyPI](https://img.shields.io/pypi/v/jittor-fid.svg)](https://pypi.org/project/jittor-fid/)
 
-# FID score for PyTorch
+# FID score for Jittor
 
-This is a port of the official implementation of [Fréchet Inception Distance](https://arxiv.org/abs/1706.08500) to PyTorch. 
+This is a port of the official implementation of [Fréchet Inception Distance](https://arxiv.org/abs/1706.08500) to Jittor. 
 See [https://github.com/bioinf-jku/TTUR](https://github.com/bioinf-jku/TTUR) for the original implementation using Tensorflow.
 
 FID is a measure of similarity between two datasets of images. 
@@ -15,16 +15,15 @@ The weights and the model are exactly the same as in [the official Tensorflow im
 
 ## Installation
 
-Install from [pip](https://pypi.org/project/pytorch-fid/):
+Install from [pip](https://pypi.org/project/jittor-fid/):
 
 ```
-pip install pytorch-fid
+pip install jittor-fid
 ```
 
 Requirements:
 - python3
-- pytorch
-- torchvision
+- jittor
 - pillow
 - numpy
 - scipy
@@ -33,7 +32,7 @@ Requirements:
 
 To compute the FID score between two datasets, where images of each dataset are contained in an individual folder:
 ```
-python -m pytorch_fid path/to/dataset1 path/to/dataset2
+python -m jittor_fid path/to/dataset1 path/to/dataset2
 ```
 
 To run the evaluation on GPU, use the flag `--device cuda:N`, where `N` is the index of the GPU to use. 
@@ -61,11 +60,11 @@ If you use this repository in your research, consider citing it using the follow
 ```
 @misc{Seitzer2020FID,
   author={Maximilian Seitzer},
-  title={{pytorch-fid: FID Score for PyTorch}},
+  title={{jittor-fid: FID Score for Jittor}},
   month={August},
   year={2020},
   note={Version 0.2.1},
-  howpublished={\url{https://github.com/mseitzer/pytorch-fid}},
+  howpublished={\url{https://github.com/mseitzer/jittor-fid}},
 }
 ```
 

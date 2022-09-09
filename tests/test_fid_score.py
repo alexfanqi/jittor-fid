@@ -1,22 +1,14 @@
 import numpy as np
-import pytest
-import torch
 from PIL import Image
 
-from pytorch_fid import fid_score, inception
+from jittor_fid import fid_score, inception
 
-
-@pytest.fixture
-def device():
-    return torch.device('cpu')
-
-
-def test_calculate_fid_given_statistics(mocker, tmp_path, device):
+def test_calculate_fid_given_statistics(mocker, tmp_path):
     dim = 2048
     m1, m2 = np.zeros((dim,)), np.ones((dim,))
     sigma = np.eye(dim)
 
-    def dummy_statistics(path, model, batch_size, dims, device, num_workers):
+    def dummy_statistics(path, model, batch_size, dims, num_workers):
         if path.endswith('1'):
             return m1, sigma
         elif path.endswith('2'):
@@ -24,7 +16,7 @@ def test_calculate_fid_given_statistics(mocker, tmp_path, device):
         else:
             raise ValueError
 
-    mocker.patch('pytorch_fid.fid_score.compute_statistics_of_path',
+    mocker.patch('jittor_fid.fid_score.compute_statistics_of_path',
                  side_effect=dummy_statistics)
 
     dir_names = ['1', '2']
@@ -36,7 +28,6 @@ def test_calculate_fid_given_statistics(mocker, tmp_path, device):
 
     fid_value = fid_score.calculate_fid_given_paths(paths,
                                                     batch_size=dim,
-                                                    device=device,
                                                     dims=dim,
                                                     num_workers=0)
 
@@ -44,9 +35,9 @@ def test_calculate_fid_given_statistics(mocker, tmp_path, device):
     assert fid_value == np.sum((m1 - m2)**2)
 
 
-def test_compute_statistics_of_path(mocker, tmp_path, device):
+def test_compute_statistics_of_path(mocker, tmp_path):
     model = mocker.MagicMock(inception.InceptionV3)()
-    model.side_effect = lambda inp: [inp.mean(dim=(2, 3), keepdim=True)]
+    model.side_effect = lambda inp: [inp.mean(dims=(2, 3), keepdims=True)]
 
     size = (4, 4, 3)
     arrays = [np.zeros(size), np.ones(size) * 0.5, np.ones(size)]
@@ -60,14 +51,13 @@ def test_compute_statistics_of_path(mocker, tmp_path, device):
     stats = fid_score.compute_statistics_of_path(str(tmp_path), model,
                                                  batch_size=len(images),
                                                  dims=3,
-                                                 device=device,
                                                  num_workers=0)
 
     assert np.allclose(stats[0], np.ones((3,)) * 0.5, atol=1e-3)
     assert np.allclose(stats[1], np.ones((3, 3)) * 0.25)
 
 
-def test_compute_statistics_of_path_from_file(mocker, tmp_path, device):
+def test_compute_statistics_of_path_from_file(mocker, tmp_path):
     model = mocker.MagicMock(inception.InceptionV3)()
 
     mu = np.random.randn(5)
@@ -80,7 +70,6 @@ def test_compute_statistics_of_path_from_file(mocker, tmp_path, device):
     stats = fid_score.compute_statistics_of_path(str(path), model,
                                                  batch_size=1,
                                                  dims=5,
-                                                 device=device,
                                                  num_workers=0)
 
     assert np.allclose(stats[0], mu)

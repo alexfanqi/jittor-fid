@@ -21,15 +21,15 @@ def get_version(rel_path):
 
 if __name__ == '__main__':
     setuptools.setup(
-        name='pytorch-fid',
-        version=get_version(os.path.join('src', 'pytorch_fid', '__init__.py')),
+        name='jittor-fid',
+        version=get_version(os.path.join('src', 'jittor_fid', '__init__.py')),
         author='Max Seitzer',
         author_email='current.address@unknown.invalid',
         description=('Package for calculating Frechet Inception Distance (FID)'
-                     ' using PyTorch'),
+                     ' using Jittor'),
         long_description=read('README.md'),
         long_description_content_type='text/markdown',
-        url='https://github.com/mseitzer/pytorch-fid',
+        url='https://github.com/alexfanqi/jittor-fid',
         package_dir={'': 'src'},
         packages=setuptools.find_packages(where='src'),
         classifiers=[
@@ -39,15 +39,14 @@ if __name__ == '__main__':
         python_requires='>=3.5',
         entry_points={
             'console_scripts': [
-                'pytorch-fid = pytorch_fid.fid_score:main',
+                'jittor-fid = jittor_fid.fid_score:main',
             ],
         },
         install_requires=[
             'numpy',
             'pillow',
             'scipy',
-            'torch>=1.0.1',
-            'torchvision>=0.2.2'
+            'jittor>=1.3'
         ],
         extras_require={'dev': ['flake8',
                                 'flake8-bugbear',
