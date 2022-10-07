@@ -64,10 +64,11 @@ IMAGE_EXTENSIONS = {'bmp', 'jpg', 'jpeg',
 
 class ImagePathDataset(jt.dataset.Dataset):
 
-    def __init__(self, files, transforms=None):
+    def __init__(self, files, batch_size=50, transforms=None):
         super(ImagePathDataset, self).__init__()
         self.files = files
         self.transforms = transforms
+        self.batch_size = batch_size
 
     def __len__(self):
         return len(self.files)
@@ -103,11 +104,13 @@ def get_activations(files, model, batch_size=50, dims=2048, num_workers=1):
     if (batch_size > len(files)):
         print('Warning: batch size is bigger than the data size. Setting batch size to data size')
         batch_size = len(files)
-    dataloader = ImagePathDataset(files, transforms=TF.ToTensor()) \
+    dataloader = ImagePathDataset(files, batch_size, transforms=TF.ToTensor()) \
         .set_attrs(batch_size=batch_size, shuffle=False, drop_last=False, num_workers=num_workers)
+    dataloader = iter(dataloader)
     pred_arr = np.empty((len(files), dims))
     start_idx = 0
-    for batch in tqdm(dataloader):
+    with tqdm(total=len(files)) as pbar:
+        batch = next(dataloader)
         with jt.no_grad():
             pred = model(batch)[0]
         if ((pred.shape[2] != 1) or (pred.shape[3] != 1)):
@@ -115,6 +118,7 @@ def get_activations(files, model, batch_size=50, dims=2048, num_workers=1):
         pred = pred.squeeze(3).squeeze(2).numpy()
         pred_arr[start_idx:(start_idx + pred.shape[0])] = pred
         start_idx = (start_idx + pred.shape[0])
+        pbar.update(batch.shape[0])
     return pred_arr
 
 
